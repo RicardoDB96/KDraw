@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -25,7 +24,7 @@ fun App(vm: AppViewModel = viewModel { AppViewModel() }) {
 
         Column(Modifier.fillMaxWidth()) {
             Slider(value = width, onValueChange = { width = it }, valueRange = 1f..100f)
-            OutlinedTextField(value = color, onValueChange = { color = it }, prefix = { Text("#") })
+            OutlinedTextField(value = color, onValueChange = { color = it })
 
             DrawingCanvas(
                 //modifier = Modifier.weight(1f),
