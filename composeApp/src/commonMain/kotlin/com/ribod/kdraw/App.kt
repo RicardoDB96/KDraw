@@ -2,7 +2,6 @@ package com.ribod.kdraw
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.runtime.*
@@ -10,12 +9,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ribod.kdraw.ui.core.components.DrawingCanvas
+import com.ribod.kdraw.ui.core.theme.KDrawTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
 fun App(vm: AppViewModel = viewModel { AppViewModel() }) {
-    MaterialTheme {
+    KDrawTheme {
         val state by vm.uiState.collectAsState()
 
         var width by rememberSaveable { mutableStateOf(2f) }
