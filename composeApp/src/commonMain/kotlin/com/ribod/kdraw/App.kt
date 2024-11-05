@@ -1,41 +1,64 @@
 package com.ribod.kdraw
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.ribod.kdraw.ui.core.components.DrawingCanvas
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScope
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.ribod.kdraw.ui.core.navigation.NavigationItem
+import com.ribod.kdraw.ui.core.navigation.NavigationWrapper
 import com.ribod.kdraw.ui.core.theme.KDrawTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
-fun App(vm: AppViewModel = viewModel { AppViewModel() }) {
+fun App() {
     KDrawTheme {
-        val state by vm.uiState.collectAsState()
+        val items = listOf(NavigationItem.Home(), NavigationItem.Configuration())
 
-        var width by rememberSaveable { mutableStateOf(2f) }
-        var color by rememberSaveable { mutableStateOf("") }
-        var isZoomEnable by rememberSaveable { mutableStateOf(false) }
+        val mainNavController = rememberNavController()
+        val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
 
-        Column(Modifier.fillMaxWidth()) {
-            Slider(value = width, onValueChange = { width = it }, valueRange = 1f..100f)
-            OutlinedTextField(value = color, onValueChange = { color = it })
-
-            DrawingCanvas(
-                //modifier = Modifier.weight(1f),
-                globalLines = state.globalLines,
-                width = width,
-                colorHex = vm.colorFromHexString(color) ?: 0xFF000000,
-                isZoomEnabled = isZoomEnable,
-                onModeChange = { isZoomEnable = it },
-                onDrawChange = { vm.onDrawChange(it) },
-                onLinesMoved = { vm.onLinesMoved(it) }
+        NavigationSuiteScaffold(navigationSuiteItems = {
+            navigationBar(
+                items = items,
+                navController = mainNavController,
+                navBackStackEntry = navBackStackEntry
             )
+        }) {
+            NavigationWrapper(navController = mainNavController)
         }
+    }
+}
+
+fun NavigationSuiteScope.navigationBar(
+    items: List<NavigationItem>,
+    navController: NavHostController,
+    navBackStackEntry: NavBackStackEntry?
+) {
+    val currentDestination = navBackStackEntry?.destination
+
+    items.forEach { item ->
+        item(
+            icon = item.icon,
+            label = { Text(item.title) },
+            onClick = {
+                navController.navigate(route = item.route) {
+                    navController.graph.startDestinationRoute?.let { route ->
+                        popUpTo(route) {
+                            saveState = true
+                        }
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
+            selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
+        )
     }
 }
