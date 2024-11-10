@@ -9,13 +9,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.ribod.kdraw.ui.home.HomeScreen
 
 @Composable
 fun NavigationWrapper(navController: NavHostController) {
     NavHost(navController = navController, startDestination = Routes.Home.route) {
 
         composable(route = Routes.Home.route) {
-            Box(Modifier.fillMaxSize().background(Color.Red))
+            HomeScreen()
         }
 
         composable(route = Routes.Configuration.route) {

@@ -29,6 +29,12 @@ kotlin {
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.android)
+
+            // DI
+            implementation(libs.koin.android)
+
+            // Ktor
+            implementation(libs.ktor.client.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -52,12 +58,27 @@ kotlin {
 
             // Navigation
             implementation(libs.navigation.compose)
+
+            // DI
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+
+            // Ktor
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.json)
+            implementation(libs.ktor.client.logging)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.swing)
+
+            // Ktor
+            implementation(libs.ktor.client.cio)
         }
     }
 }
