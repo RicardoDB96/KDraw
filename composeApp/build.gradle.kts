@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -70,6 +71,10 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.json)
             implementation(libs.ktor.client.logging)
+
+            // Room
+            implementation(libs.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -124,4 +129,10 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.room.compiler)
+    add("kspAndroid", libs.room.compiler)
+    add("kspDesktop", libs.room.compiler)
 }
