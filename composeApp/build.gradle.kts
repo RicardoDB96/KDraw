@@ -125,6 +125,11 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+
+            appResourcesRootDir.set(project.layout.projectDirectory.dir("resources"))
+
+            jvmArgs += "-splash:${'$'}APPDIR/resources/splash.gif"
+
             packageName = "com.ribod.kdraw"
             packageVersion = "1.0.0"
         }
