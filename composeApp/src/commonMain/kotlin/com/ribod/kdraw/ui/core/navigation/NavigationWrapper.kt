@@ -1,26 +1,32 @@
 package com.ribod.kdraw.ui.core.navigation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.ribod.kdraw.ui.home.HomeScreen
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.ribod.kdraw.ui.draw.DrawScreen
+import com.ribod.kdraw.ui.main.MainScreen
 
 @Composable
-fun NavigationWrapper(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Routes.Home.route) {
+fun NavigationWrapper() {
+    val mainNavController = rememberNavController()
 
-        composable(route = Routes.Home.route) {
-            HomeScreen()
+    NavHost(navController = mainNavController, startDestination = Routes.Main.route) {
+        composable(route = Routes.Main.route) {
+            MainScreen(mainNavController)
         }
 
-        composable(route = Routes.Configuration.route) {
-            Box(Modifier.fillMaxSize().background(Color.Blue))
+        composable<Draw> { navBackStackEntry ->
+            val drawId = navBackStackEntry.toRoute<Draw>().id
+            DrawScreen(
+                id = drawId,
+                onBackPressed = {
+                    mainNavController.popBackStack(
+                        route = Routes.Main.route,
+                        inclusive = false
+                    )
+                })
         }
     }
 }

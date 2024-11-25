@@ -1,10 +1,11 @@
-package com.ribod.kdraw.ui.core.navigation
+package com.ribod.kdraw.ui.core.navigation.navigationbar
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import com.ribod.kdraw.ui.core.navigation.Routes
 
 sealed class NavigationItem {
     abstract val route: String

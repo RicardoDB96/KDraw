@@ -45,6 +45,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.materialIconsExtended)
 
             // Lifecycle
             implementation(libs.androidx.lifecycle.viewmodel)
@@ -75,6 +76,9 @@ kotlin {
             // Room
             implementation(libs.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+
+            // Compose Unstyled
+            implementation(libs.compose.unstyled)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
