@@ -29,6 +29,8 @@ androidx-sqlite = "2.5.0-alpha11"
 
 ksp = "2.0.21-1.0.27"
 
+compose-unstyled = "1.19.1"
+
 [libraries]
 #kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 #kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -77,6 +79,9 @@ room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "
 #room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "androidx-sqlite" }
+
+# Compose Unstyled
+compose-unstyled = { module = "com.composables:core", version.ref = "compose-unstyled" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
