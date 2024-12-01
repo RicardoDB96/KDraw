@@ -81,7 +81,13 @@ kotlin {
             implementation(libs.compose.unstyled)
         }
         desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
+            implementation(compose.desktop.currentOs) {
+                exclude(group = "org.jetbrains.compose.material")
+            }
+
+            // JetBrains Jewel
+            implementation(libs.jewel)
+            implementation(libs.jewel.decorated)
 
             // Coroutines
             implementation(libs.kotlinx.coroutines.swing)

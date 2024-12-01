@@ -30,6 +30,7 @@ androidx-sqlite = "2.5.0-alpha11"
 ksp = "2.0.21-1.0.27"
 
 compose-unstyled = "1.19.1"
+jewel = "0.26.2"
 
 [libraries]
 #kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -82,6 +83,10 @@ androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", 
 
 # Compose Unstyled
 compose-unstyled = { module = "com.composables:core", version.ref = "compose-unstyled" }
+
+# JetBrains Jewel
+jewel = { module = "org.jetbrains.jewel:jewel-int-ui-standalone-243", version.ref = "jewel" }
+jewel-decorated = { module = "org.jetbrains.jewel:jewel-int-ui-decorated-window-243", version.ref = "jewel" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
