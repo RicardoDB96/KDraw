@@ -1,5 +1,10 @@
 package com.ribod.kdraw.ui.core.components
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +38,9 @@ fun DeleteDialog(modifier: Modifier = Modifier, state: DialogState, onDeleteClic
                 .widthIn(min = 280.dp, max = 560.dp)
                 .padding(20.dp)
                 .clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.surface),
+            enter = scaleIn(initialScale = 0.8f) + fadeIn(tween(durationMillis = 250)),
+            exit = scaleOut(targetScale = 0.8f) + fadeOut(tween(durationMillis = 250)),
         ) {
             Column {
                 Column(modifier = Modifier.padding(start = 24.dp, top = 24.dp, end = 24.dp)) {
