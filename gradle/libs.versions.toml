@@ -1,8 +1,8 @@
 [versions]
-agp = "8.3.2"
-android-compileSdk = "34"
+agp = "8.5.2"
+android-compileSdk = "35"
 android-minSdk = "24"
-android-targetSdk = "34"
+android-targetSdk = "35"
 androidx-activityCompose = "1.9.3"
 #androidx-appcompat = "1.7.0"
 #androidx-constraintlayout = "2.2.0"
@@ -13,22 +13,15 @@ androidx-lifecycle = "2.8.4"
 #androidx-test-junit = "1.2.1"
 compose-plugin = "1.7.1"
 #junit = "4.13.2"
-kotlin = "2.0.21"
+kotlin = "2.1.0"
 kotlinx-coroutines = "1.9.0"
-
 serialization = "1.7.3"
-
 navigation-compose = "2.8.0-alpha10"
-
 koin = "4.0.0"
-
 ktor = "3.0.0"
-
 room = "2.7.0-alpha11"
 androidx-sqlite = "2.5.0-alpha11"
-
 ksp = "2.0.21-1.0.27"
-
 compose-unstyled = "1.19.1"
 jewel = "0.26.2"
 
