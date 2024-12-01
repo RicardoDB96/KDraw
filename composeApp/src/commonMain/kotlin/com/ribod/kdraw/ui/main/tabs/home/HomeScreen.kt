@@ -63,7 +63,6 @@ fun HomeScreen(
             ExtendedFloatingActionButton(
                 onClick = { vm.createNewDraw() },
                 text = { Text("New Draw") },
-                contentColor = MaterialTheme.colorScheme.primary,
                 icon = {
                     Icon(
                         Icons.Default.Add, contentDescription = "New Draw"

@@ -89,10 +89,14 @@ fun KDrawTheme(
 ) {
     val colorScheme = if (darkTheme) darkScheme else lightScheme
 
-  MaterialTheme(
-    colorScheme = colorScheme,
-    typography = AppTypography,
-    content = content
-  )
+    PlatformTheme(darkTheme)
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = AppTypography,
+        content = content
+    )
 }
 
+@Composable
+expect fun PlatformTheme(darkTheme: Boolean)
