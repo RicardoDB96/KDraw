@@ -18,10 +18,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.composables.core.Dialog
 import com.composables.core.DialogPanel
 import com.composables.core.DialogState
@@ -44,20 +46,32 @@ fun DeleteDialog(modifier: Modifier = Modifier, state: DialogState, onDeleteClic
         ) {
             Column {
                 Column(modifier = Modifier.padding(start = 24.dp, top = 24.dp, end = 24.dp)) {
-                    Text(text = "Delete selected draws?", fontWeight = FontWeight.Medium)
-                    Spacer(Modifier.height(8.dp))
-                    Text(text = "This action cannot be undone.")
+                    Text(
+                        text = "Delete selected draws?",
+                        fontSize = 24.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        text = "This action cannot be undone.",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-                Row(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .align(Alignment.End)
+                ) {
                     TextButton(onClick = { state.visible = false }) {
-                        Text("Cancel")
+                        Text("Cancel", fontWeight = FontWeight.Medium, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                     }
-                    Spacer(Modifier.weight(1f))
+                    Spacer(Modifier.padding(horizontal = 8.dp))
                     TextButton(onClick = {
                         onDeleteClick()
                         state.visible = false
                     }) {
-                        Text("Delete")
+                        Text("Delete", fontWeight = FontWeight.Medium, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
