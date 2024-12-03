@@ -1,5 +1,10 @@
 package com.ribod.kdraw.ui.core.components
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,7 +45,7 @@ fun ThemeDialog(
 ) {
     Dialog(state = state) {
         val (selectedTheme, onThemeSelected) = remember { mutableStateOf(currentTheme) }
-        Scrim()
+        Scrim(enter = fadeIn(), exit = fadeOut())
         DialogPanel(
             modifier = modifier.displayCutoutPadding()
                 .systemBarsPadding()
@@ -48,6 +53,8 @@ fun ThemeDialog(
                 .padding(20.dp)
                 .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.surface),
+            enter = scaleIn(initialScale = 0.8f) + fadeIn(tween(durationMillis = 250)),
+            exit = scaleOut(targetScale = 0.6f) + fadeOut(tween(durationMillis = 150)),
         ) {
             Column {
                 Column(modifier = Modifier.padding(start = 24.dp, top = 24.dp, end = 24.dp)) {

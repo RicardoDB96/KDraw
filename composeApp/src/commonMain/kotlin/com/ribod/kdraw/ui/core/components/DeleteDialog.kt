@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.displayCutoutPadding
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -32,7 +33,7 @@ import com.composables.core.Scrim
 @Composable
 fun DeleteDialog(modifier: Modifier = Modifier, state: DialogState, onDeleteClick: () -> Unit) {
     Dialog(state = state) {
-        Scrim()
+        Scrim(enter = fadeIn(), exit = fadeOut())
         DialogPanel(
             modifier = modifier
                 .displayCutoutPadding()
@@ -42,7 +43,7 @@ fun DeleteDialog(modifier: Modifier = Modifier, state: DialogState, onDeleteClic
                 .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.surface),
             enter = scaleIn(initialScale = 0.8f) + fadeIn(tween(durationMillis = 250)),
-            exit = scaleOut(targetScale = 0.8f) + fadeOut(tween(durationMillis = 250)),
+            exit = scaleOut(targetScale = 0.6f) + fadeOut(tween(durationMillis = 150)),
         ) {
             Column {
                 Column(modifier = Modifier.padding(start = 24.dp, top = 24.dp, end = 24.dp)) {
@@ -54,6 +55,7 @@ fun DeleteDialog(modifier: Modifier = Modifier, state: DialogState, onDeleteClic
                     Spacer(Modifier.height(16.dp))
                     Text(
                         text = "This action cannot be undone.",
+                        modifier = Modifier.fillMaxWidth(),
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
