@@ -5,6 +5,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.intPreferencesKey
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
+import org.koin.compose.koinInject
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -83,13 +91,21 @@ private val darkScheme = darkColorScheme(
 )
 
 @Composable
-fun KDrawTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
-) {
-    val colorScheme = if (darkTheme) darkScheme else lightScheme
+fun KDrawTheme(prefs: DataStore<Preferences> = koinInject(), content: @Composable () -> Unit) {
+    val currentTheme by prefs.data.map {
+        it[intPreferencesKey("theme")] ?: 0
+    }.collectAsState(initial = 0, context = Dispatchers.IO)
 
-    PlatformTheme(darkTheme)
+    val isDarkMode = when (currentTheme) {
+        ThemeMode.SYSTEM.ordinal -> isSystemInDarkTheme()
+        ThemeMode.LIGHT.ordinal -> false
+        ThemeMode.DARK.ordinal -> true
+        else -> isSystemInDarkTheme()
+    }
+
+    PlatformTheme(isDarkMode)
+
+    val colorScheme = if (isDarkMode) darkScheme else lightScheme
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -100,3 +116,7 @@ fun KDrawTheme(
 
 @Composable
 expect fun PlatformTheme(darkTheme: Boolean)
+
+enum class ThemeMode {
+    SYSTEM, LIGHT, DARK
+}

@@ -24,6 +24,7 @@ androidx-sqlite = "2.5.0-alpha11"
 ksp = "2.0.21-1.0.27"
 compose-unstyled = "1.19.1"
 jewel = "0.26.2"
+datastore = "1.1.1"
 
 [libraries]
 #kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -80,6 +81,10 @@ compose-unstyled = { module = "com.composables:core", version.ref = "compose-uns
 # JetBrains Jewel
 jewel = { module = "org.jetbrains.jewel:jewel-int-ui-standalone-243", version.ref = "jewel" }
 jewel-decorated = { module = "org.jetbrains.jewel:jewel-int-ui-decorated-window-243", version.ref = "jewel" }
+
+# Multiplatform settings
+datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

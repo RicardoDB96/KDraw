@@ -22,7 +22,7 @@ sealed class NavigationItem {
 
     data class Configuration(
         override val route: String = Routes.Configuration.route,
-        override val title: String = "Configuration",
+        override val title: String = "Settings",
         override val icon: @Composable () -> Unit = {
             Icon(imageVector = Icons.Default.Settings, contentDescription = title)
         },

@@ -80,6 +80,10 @@ kotlin {
 
             // Compose Unstyled
             implementation(libs.compose.unstyled)
+
+            // Multiplatform Settings
+            api(libs.datastore)
+            api(libs.datastore.preferences)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs) {

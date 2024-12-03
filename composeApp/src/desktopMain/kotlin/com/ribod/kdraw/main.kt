@@ -40,7 +40,6 @@ import org.jetbrains.jewel.window.styling.TitleBarStyle
 fun main() {
     initKoin()
     application {
-
         IntUiTheme(
             theme = JewelTheme.darkThemeDefinition(),
             styling = ComponentStyling.default().decoratedWindow(),
