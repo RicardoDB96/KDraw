@@ -87,7 +87,7 @@ fun ToolButton(
                 imageVector = tool.icon,
                 contentDescription = tool.actionText,
                 tint = if (toolSelected == tool) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.inverseSurface,
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(6.dp)
             )
         }
     }
@@ -116,7 +116,7 @@ fun CanvasModeButton(
                 imageVector = canvasMode.icon,
                 contentDescription = canvasMode.actionText,
                 tint = MaterialTheme.colorScheme.inverseSurface,
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(6.dp)
             )
         }
     }
