@@ -1,7 +1,7 @@
 package com.ribod.kdraw
 
 import androidx.lifecycle.ViewModel
-import com.ribod.kdraw.ui.core.components.GlobalLine
+import com.ribod.kdraw.domain.model.GlobalLine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
