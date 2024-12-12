@@ -33,15 +33,19 @@ import com.ribod.kdraw.utils.adjustColorForBackground
 fun DrawCanvas(
     modifier: Modifier = Modifier,
     selectedTool: Tool,
+    scale: Float,
+    onScaleChange: (Float) -> Unit,
+    offset: Offset,
+    onOffsetChange: (Offset) -> Unit,
     width: Float,
     colorHex: Long,
     onDrawChange: (GlobalLine) -> Unit,
     onLinesMoved: (List<GlobalLine>) -> Unit,
     globalLines: List<GlobalLine>,
-    canvasMode: CanvasMode
+    canvasMode: CanvasMode,
 ) {
-    var scale by remember { mutableStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
+    val currentScale by rememberUpdatedState(scale)
+    val currentOffset by rememberUpdatedState(offset)
 
     var movedLines by remember { mutableStateOf<List<GlobalLine>>(emptyList()) }
 
@@ -70,25 +74,23 @@ fun DrawCanvas(
     Canvas(
         modifier = modifier
             .drawingCanvasModifier(
-                offset = offset,
-                scale = scale,
+                offset = currentOffset,
+                scale = currentScale,
                 changeOffset = { newOffset, isSum ->
                     if (isSum) {
-                        offset += newOffset
+                        onOffsetChange(currentOffset + newOffset)
                     } else {
-                        offset = newOffset
+                        onOffsetChange(newOffset)
                     }
                 },
-                changeScale = {
-                    scale = it
-                },
+                changeScale = { onScaleChange(it) },
                 changeBoxOffSet = { newOffset, isSum ->
                     val allMovedPoints = movedLines.flatMap { line -> line.points }
 
-                    val off = if (isSum) offset + newOffset else newOffset
+                    val off = if (isSum) currentOffset + newOffset else newOffset
 
                     val movedCanvasPoints =
-                        allMovedPoints.map { point -> globalToCanvas(point, scale, off) }
+                        allMovedPoints.map { point -> globalToCanvas(point, currentScale, off) }
 
                     val minX = movedCanvasPoints.minOfOrNull { it.x } ?: 0f
                     val minY = movedCanvasPoints.minOfOrNull { it.y } ?: 0f
@@ -100,7 +102,7 @@ fun DrawCanvas(
                 changeBoxScale = { newScale ->
                     val allMovedPoints = movedLines.flatMap { line -> line.points }
                     val movedCanvasPoints =
-                        allMovedPoints.map { point -> globalToCanvas(point, newScale, offset) }
+                        allMovedPoints.map { point -> globalToCanvas(point, newScale, currentOffset) }
 
                     val minX = movedCanvasPoints.minOfOrNull { it.x } ?: 0f
                     val minY = movedCanvasPoints.minOfOrNull { it.y } ?: 0f
@@ -114,11 +116,11 @@ fun DrawCanvas(
             .pointerInput(Unit) { // Zoom gesture
                 detectTransformGestures(
                     onGesture = { centroid, _, zoom, _ ->
-                        val newScale = (scale * zoom).coerceIn(0.5f, 30f)
+                        val newScale = (currentScale * zoom).coerceIn(0.1f, 5f)
 
-                        if (newScale != scale) {
-                            scale = newScale
-                            offset = (offset - centroid) * zoom + centroid
+                        if (newScale != currentScale) {
+                            onScaleChange(newScale)
+                            onOffsetChange((currentOffset - centroid) * zoom + centroid)
                         }
                     }
                 )
@@ -126,7 +128,7 @@ fun DrawCanvas(
             .pointerInput(Unit) {
                 detectTapGestures { tapPosition ->
                     if (currentSelectedTool == Tool.Pen) {
-                        val globalTap = canvasToGlobal(tapPosition, scale, offset)
+                        val globalTap = canvasToGlobal(tapPosition, currentScale, currentOffset)
                         val newGlobalLine = GlobalLine(
                             points = listOf(globalTap),
                             width = currentWidth,
@@ -154,7 +156,7 @@ fun DrawCanvas(
                             }
 
                             Tool.Pen -> {
-                                val globalStart = canvasToGlobal(startPosition, scale, offset)
+                                val globalStart = canvasToGlobal(startPosition, currentScale, currentOffset)
                                 currentGlobalPath.clear()
                                 currentGlobalPath.add(globalStart)
                                 lastPoint = globalStart
@@ -169,7 +171,7 @@ fun DrawCanvas(
                             Tool.Select -> {
                                 if (isMovingSelection) {
                                     val globalDragAmount =
-                                        canvasToGlobal(dragAmount, scale, Offset.Zero) - Offset.Zero
+                                        canvasToGlobal(dragAmount, currentScale, Offset.Zero) - Offset.Zero
 
                                     movedLines = movedLines.map { line ->
                                         val movedPoints = line.points.map { point ->
@@ -183,7 +185,7 @@ fun DrawCanvas(
                                     val allMovedPoints =
                                         movedLines.flatMap { line -> line.points.zip(List(line.points.size) { line.width }) }
                                     val movedCanvasPoints = allMovedPoints.map { (point, width) ->
-                                        globalToCanvas(point, scale, offset) to (width * scale)
+                                        globalToCanvas(point, currentScale, currentOffset) to (width * currentScale)
                                     }
 
                                     val minX =
@@ -208,13 +210,13 @@ fun DrawCanvas(
                             Tool.Pen -> {
                                 change.consume()
 
-                                val globalPoint = canvasToGlobal(change.position, scale, offset)
+                                val globalPoint = canvasToGlobal(change.position, currentScale, currentOffset)
                                 currentGlobalPath.add(globalPoint)
                                 lastPoint = globalPoint
                             }
 
                             Tool.Hand -> {
-                                offset += dragAmount
+                                onOffsetChange(currentOffset + dragAmount)
                             }
                         }
                     },
@@ -246,9 +248,9 @@ fun DrawCanvas(
                                         if (line.isPoint) {
                                             line.points.first().let { point ->
                                                 val canvasPoint =
-                                                    globalToCanvas(point, scale, offset)
+                                                    globalToCanvas(point, currentScale, currentOffset)
 
-                                                val pointRadius = (line.width / 2) * scale
+                                                val pointRadius = (line.width / 2) * currentScale
                                                 val pointRect = Rect(
                                                     canvasPoint.x - pointRadius,
                                                     canvasPoint.y - pointRadius,
@@ -261,7 +263,7 @@ fun DrawCanvas(
                                         } else {
                                             line.points.all { point ->
                                                 val canvasPoint =
-                                                    globalToCanvas(point, scale, offset)
+                                                    globalToCanvas(point, currentScale, currentOffset)
                                                 rect.contains(canvasPoint)
                                             }
                                         }
@@ -273,8 +275,8 @@ fun DrawCanvas(
                                         val canvasPoints = allPoints.map { point ->
                                             globalToCanvas(
                                                 point,
-                                                scale,
-                                                offset
+                                                currentScale,
+                                                currentOffset
                                             )
                                         }
 
@@ -285,7 +287,7 @@ fun DrawCanvas(
 
                                         val maxLineWidth =
                                             selectedLines.maxOfOrNull { it.width } ?: 0f
-                                        val adjustedLineWidth = (maxLineWidth * scale) / 2
+                                        val adjustedLineWidth = (maxLineWidth * currentScale) / 2
 
                                         Rect(
                                             minX - adjustedLineWidth,
@@ -306,8 +308,8 @@ fun DrawCanvas(
             }
     ) {
         when (currentCanvasMode) {
-            CanvasMode.GRID -> drawGrid(scale = scale, offset = offset)
-            CanvasMode.DOTS -> drawDots(scale = scale, offset = offset)
+            CanvasMode.GRID -> drawGrid(scale = currentScale, offset = currentOffset)
+            CanvasMode.DOTS -> drawDots(scale = currentScale, offset = currentOffset)
             CanvasMode.EMPTY -> {}
         }
 
@@ -316,17 +318,17 @@ fun DrawCanvas(
             // Si estamos moviendo la selección, dibujar la nueva posición de las líneas seleccionadas
             if (isMovingSelection && selectedLines.contains(line)) {
                 movedLines.find { it == line }?.let { movedLine ->
-                    drawLineOnCanvas(movedLine, backgroundColor, scale, offset)
+                    drawLineOnCanvas(movedLine, backgroundColor, currentScale, currentOffset)
                 }
             } else {
                 // Dibujar las líneas que no están siendo movidas o no están seleccionadas
-                drawLineOnCanvas(line, backgroundColor, scale, offset)
+                drawLineOnCanvas(line, backgroundColor, currentScale, currentOffset)
             }
         }
 
         selectionBoundingBox?.let { boundingBox ->
             // Ajustar el grosor del borde del recuadro según el zoom para que se mantenga visible
-            val borderStrokeWidth = (2f / scale).coerceAtLeast(1f)
+            val borderStrokeWidth = (2f / currentScale).coerceAtLeast(1f)
 
             drawRect(
                 color = selectionColor,
@@ -338,10 +340,10 @@ fun DrawCanvas(
 
         if (currentGlobalPath.isNotEmpty()) {
             val realTimePath = Path().apply {
-                val firstPoint = globalToCanvas(currentGlobalPath.first(), scale, offset)
+                val firstPoint = globalToCanvas(currentGlobalPath.first(), currentScale, currentOffset)
                 moveTo(firstPoint.x, firstPoint.y)
                 currentGlobalPath.drop(1).forEach { point ->
-                    val canvasPoint = globalToCanvas(point, scale, offset)
+                    val canvasPoint = globalToCanvas(point, currentScale, currentOffset)
                     lineTo(canvasPoint.x, canvasPoint.y)
                 }
             }
@@ -354,7 +356,7 @@ fun DrawCanvas(
                     backgroundColor = backgroundColor
                 ),
                 style = Stroke(
-                    width = currentWidth * scale,
+                    width = currentWidth * currentScale,
                     cap = StrokeCap.Round,
                     join = StrokeJoin.Round
                 )
