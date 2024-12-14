@@ -7,9 +7,9 @@ import androidx.compose.ui.geometry.Offset
 @Composable
 actual fun Modifier.drawingCanvasModifier(
     offset: Offset,
-    scale: Float,
+    scale: Int,
     changeOffset: (Offset, Boolean) -> Unit,
-    changeScale: (Float) -> Unit,
+    changeScale: (Int) -> Unit,
     changeBoxOffSet: (Offset, Boolean) -> Unit,
-    changeBoxScale: (Float) -> Unit
+    changeBoxScale: (Int) -> Unit
 ): Modifier = this

@@ -17,11 +17,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 @Composable
 actual fun Modifier.drawingCanvasModifier(
     offset: Offset,
-    scale: Float,
+    scale: Int,
     changeOffset: (Offset, Boolean) -> Unit,
-    changeScale: (Float) -> Unit,
+    changeScale: (Int) -> Unit,
     changeBoxOffSet: (Offset, Boolean) -> Unit,
-    changeBoxScale: (Float) -> Unit
+    changeBoxScale: (Int) -> Unit
 ): Modifier =
     this.then(
         // Detectar la rueda del ratón para pan (desplazamiento)
@@ -42,7 +42,7 @@ actual fun Modifier.drawingCanvasModifier(
                 if (isCtrlPressed) {
                     // Zoom con Ctrl + Scroll
                     val zoomChange = 1f - scrollDelta / 10f
-                    val newScale = (scale * zoomChange).coerceIn(0.1f, 5f)
+                    val newScale = ((scale * zoomChange).toInt()).coerceIn(10, 500)
 
                     // Solo aplicar el nuevo scale si es diferente al actual
                     if (newScale != scale) {

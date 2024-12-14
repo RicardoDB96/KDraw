@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DrawZoom(
     modifier: Modifier = Modifier,
-    zoomPercent: Float,
+    zoomPercent: Int,
     onPercentageClick: () -> Unit,
     onZoomOut: () -> Unit,
     onZoomIn: () -> Unit
@@ -63,14 +63,14 @@ fun DrawZoom(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PercentageAndResetZoom(modifier: Modifier = Modifier, zoomPercent: Float, onPercentageClick: () -> Unit) {
+fun PercentageAndResetZoom(modifier: Modifier = Modifier, zoomPercent: Int, onPercentageClick: () -> Unit) {
     TooltipBox(
         positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
         tooltip = { PlainTooltip { Text(text = "Reset zoom") } },
         state = rememberTooltipState(),
     ) {
         Text(
-            text = "${zoomPercent.times(100).toInt()}%",
+            text = "$zoomPercent%",
             modifier = modifier.clickable(role = Role.Button, onClick = onPercentageClick)
                 .padding(horizontal = 10.dp, vertical = 8.dp)
         )

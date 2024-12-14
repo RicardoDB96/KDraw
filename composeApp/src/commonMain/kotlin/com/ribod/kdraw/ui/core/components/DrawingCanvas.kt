@@ -49,7 +49,7 @@ fun DrawingCanvas(
     var toolSelected by rememberSaveable { mutableStateOf(Tool.Hand) }
     var canvasMode by rememberSaveable { mutableStateOf(CanvasMode.EMPTY) }
 
-    var scale by remember { mutableStateOf(1f) }
+    var scale by remember { mutableStateOf(100) }
     var offset by remember { mutableStateOf(Offset.Zero) }
 
     var size by remember { mutableStateOf(Size.Zero) }
@@ -89,26 +89,26 @@ fun DrawingCanvas(
                 .padding(16.dp),
             zoomPercent = scale,
             onPercentageClick = {
-                val newScale = 1f
+                val newScale = 100
                 if (newScale != scale) {
                     val centerOfCanvas = Offset(size.width / 2f, size.height / 2f)
-                    offset = (offset - centerOfCanvas) * (newScale / scale) + centerOfCanvas
+                    offset = (offset - centerOfCanvas) * (newScale / scale.toFloat()) + centerOfCanvas
                     scale = newScale
                 }
             },
             onZoomIn = {
-                val newScale = (scale + 0.1f).coerceIn(0.1f, 5f)
+                val newScale = (scale + 10).coerceIn(10, 500)
                 if (newScale != scale) {
                     val centerOfCanvas = Offset(size.width / 2f, size.height / 2f)
-                    offset = (offset - centerOfCanvas) * (newScale / scale) + centerOfCanvas
+                    offset = (offset - centerOfCanvas) * (newScale / scale.toFloat()) + centerOfCanvas
                     scale = newScale
                 }
             },
             onZoomOut = {
-                val newScale = (scale - 0.1f).coerceIn(0.1f, 5f)
+                val newScale = (scale - 10).coerceIn(10, 500)
                 if (newScale != scale) {
                     val centerOfCanvas = Offset(size.width / 2f, size.height / 2f)
-                    offset = (offset - centerOfCanvas) * (newScale / scale) + centerOfCanvas
+                    offset = (offset - centerOfCanvas) * (newScale / scale.toFloat()) + centerOfCanvas
                     scale = newScale
                 }
             }
