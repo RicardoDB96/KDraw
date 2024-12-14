@@ -151,6 +151,8 @@ compose.desktop {
                 shortcut = true
                 upgradeUuid = "4b1ec0f9-356c-4fad-9ce2-61b82bf03457"
             }
+            modules("jdk.unsupported")
+            modules("jdk.unsupported.desktop")
         }
     }
 }
