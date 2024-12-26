@@ -397,17 +397,29 @@ fun DrawScope.drawLineOnCanvas(
             center = point
         )
     } else {
-        for (i in 0 until line.points.size - 1) {
-            val p1 = globalToCanvas(line.points[i], scale, offset)
-            val p2 = globalToCanvas(line.points[i + 1], scale, offset)
-            drawLine(
-                color = adjustColorForBackground(line.color, backgroundColor = backgroundColor),
-                start = p1,
-                end = p2,
-                strokeWidth = line.width * scale,
-                cap = StrokeCap.Round
-            )
+        // Dibujar un path
+        val path = Path().apply {
+            // Convertir los puntos globales a coordenadas del lienzo
+            val firstPoint = globalToCanvas(line.points.first(), scale, offset)
+            moveTo(firstPoint.x, firstPoint.y)
+
+            // Añadir líneas para conectar todos los puntos
+            line.points.drop(1).forEach { point ->
+                val canvasPoint = globalToCanvas(point, scale, offset)
+                lineTo(canvasPoint.x, canvasPoint.y)
+            }
         }
+
+        // Dibujar el path en el lienzo
+        drawPath(
+            path = path,
+            color = adjustColorForBackground(line.color, backgroundColor = backgroundColor),
+            style = Stroke(
+                width = line.width * scale,
+                cap = StrokeCap.Round,
+                join = StrokeJoin.Round
+            )
+        )
     }
 }
 
