@@ -6,7 +6,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -27,7 +26,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import com.ribod.kdraw.domain.model.GlobalLine
 import com.ribod.kdraw.ui.core.ex.drawingCanvasModifier
-import com.ribod.kdraw.utils.adjustColorForBackground
 
 @Composable
 fun DrawCanvas(
@@ -318,11 +316,11 @@ fun DrawCanvas(
             // Si estamos moviendo la selección, dibujar la nueva posición de las líneas seleccionadas
             if (isMovingSelection && selectedLines.contains(line)) {
                 movedLines.find { it == line }?.let { movedLine ->
-                    drawLineOnCanvas(movedLine, backgroundColor, currentScale.toFloat() / 100f, currentOffset)
+                    drawLineOnCanvas(movedLine, currentScale.toFloat() / 100f, currentOffset)
                 }
             } else {
                 // Dibujar las líneas que no están siendo movidas o no están seleccionadas
-                drawLineOnCanvas(line, backgroundColor, currentScale.toFloat() / 100f, currentOffset)
+                drawLineOnCanvas(line, currentScale.toFloat() / 100f, currentOffset)
             }
         }
 
@@ -351,10 +349,7 @@ fun DrawCanvas(
             //val tintedColor = tintColor(currentColorHex, currentTime)
             drawPath(
                 path = realTimePath,
-                color = adjustColorForBackground(
-                    color = Color(currentColorHex),
-                    backgroundColor = backgroundColor
-                ),
+                color = Color(currentColorHex),
                 style = Stroke(
                     width = currentWidth * currentScale.toFloat() / 100f,
                     cap = StrokeCap.Round,
@@ -385,14 +380,13 @@ fun DrawCanvas(
 // Helper para dibujar las líneas
 fun DrawScope.drawLineOnCanvas(
     line: GlobalLine,
-    backgroundColor: Color,
     scale: Float,
     offset: Offset
 ) {
     if (line.isPoint) {
         val point = globalToCanvas(line.points.first(), scale, offset)
         drawCircle(
-            color = adjustColorForBackground(line.color, backgroundColor = backgroundColor),
+            color = line.color,
             radius = (line.width / 2) * scale,
             center = point
         )
@@ -413,7 +407,7 @@ fun DrawScope.drawLineOnCanvas(
         // Dibujar el path en el lienzo
         drawPath(
             path = path,
-            color = adjustColorForBackground(line.color, backgroundColor = backgroundColor),
+            color = line.color,
             style = Stroke(
                 width = line.width * scale,
                 cap = StrokeCap.Round,
