@@ -36,7 +36,7 @@ fun DrawCanvas(
     offset: Offset,
     onOffsetChange: (Offset) -> Unit,
     width: Float,
-    colorHex: Long,
+    colorHex: ULong,
     onDrawChange: (GlobalLine) -> Unit,
     onLinesMoved: (List<GlobalLine>) -> Unit,
     globalLines: List<GlobalLine>,
@@ -66,7 +66,6 @@ fun DrawCanvas(
     val globalLinesList by rememberUpdatedState(globalLines)
     val currentCanvasMode by rememberUpdatedState(canvasMode)
 
-    val backgroundColor = MaterialTheme.colorScheme.background
     val selectionColor = if (isSystemInDarkTheme()) Color(0xFFAAC7FF) else Color(0xFF365E9D)
 
     Canvas(

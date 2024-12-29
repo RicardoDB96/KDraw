@@ -84,6 +84,9 @@ kotlin {
             // Multiplatform Settings
             api(libs.datastore)
             api(libs.datastore.preferences)
+
+            // Color Picker
+            implementation(libs.compose.colorpicker)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs) {

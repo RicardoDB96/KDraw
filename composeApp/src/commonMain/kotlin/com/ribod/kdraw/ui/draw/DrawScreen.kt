@@ -34,7 +34,9 @@ fun DrawScreen(
             DrawingCanvas(
                 globalLines = state.globalLines,
                 width = state.width,
+                onWidthChange = { width -> vm.onWidthChange(width) },
                 colorHex = state.color,
+                onColorChange = { color -> vm.onColorChange(color) },
                 onDrawChange = { line -> vm.onDrawChange(line) },
                 onLinesMoved = { lines -> vm.onLinesMoved(lines) },
             )

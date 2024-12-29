@@ -21,10 +21,11 @@ koin = "4.0.0"
 ktor = "3.0.0"
 room = "2.7.0-alpha11"
 androidx-sqlite = "2.5.0-alpha11"
-ksp = "2.0.21-1.0.27"
+ksp = "2.1.0-1.0.29"
 compose-unstyled = "1.19.1"
 jewel = "0.26.2"
 datastore = "1.1.1"
+colorpicker = "1.1.2"
 
 [libraries]
 #kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -85,6 +86,9 @@ jewel-decorated = { module = "org.jetbrains.jewel:jewel-int-ui-decorated-window-
 # Multiplatform settings
 datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+
+# Color Picker
+compose-colorpicker = { module = "com.github.skydoves:colorpicker-compose", version.ref = "colorpicker" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

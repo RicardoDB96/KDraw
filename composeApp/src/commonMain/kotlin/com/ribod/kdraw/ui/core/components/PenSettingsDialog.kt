@@ -6,9 +6,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -33,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.composables.core.Dialog
 import com.composables.core.DialogPanel
 import com.composables.core.DialogState
@@ -59,9 +64,11 @@ fun PenSettingsDialog(
     onDismiss: () -> Unit,
     widthValue: Float,
     onWidthChange: (Float) -> Unit,
+    colorValue: ULong,
     onColorChange: (ULong) -> Unit
 ) {
     var width by remember { mutableStateOf(widthValue) }
+    val color by rememberUpdatedState(colorValue)
 
     val colorController = rememberColorPickerController()
 
@@ -80,6 +87,12 @@ fun PenSettingsDialog(
         ) {
             Column {
                 Column(modifier = Modifier.padding(start = 24.dp, top = 24.dp, end = 24.dp)) {
+                    Text(
+                        text = "Custom Pen Settings",
+                        fontSize = 24.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Spacer(Modifier.height(16.dp))
                     Row {
                         IconButton(onClick = {
                             width = (width - 1f).coerceIn(1f, 100f)
@@ -131,11 +144,12 @@ fun PenSettingsDialog(
                         }
                     }
                     HsvColorPicker(
-                        modifier = Modifier.padding(16.dp).fillMaxHeight(0.5f),
+                        modifier = Modifier.padding(16.dp).fillMaxHeight(0.4f),
                         controller = colorController,
                         onColorChanged = { selectedColor: ColorEnvelope ->
                             onColorChange(selectedColor.color.value)
                         },
+                        initialColor = Color(value = color)
                     )
                     AlphaSlider(
                         modifier = Modifier.fillMaxWidth().padding(16.dp).height(35.dp),
@@ -145,14 +159,35 @@ fun PenSettingsDialog(
                         modifier = Modifier.fillMaxWidth().padding(16.dp).height(35.dp),
                         controller = colorController,
                     )
-                    AlphaTile(
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(RoundedCornerShape(6.dp)),
-                        controller = colorController
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        AlphaTile(
+                            modifier = Modifier
+                                .size(80.dp)
+                                .padding(16.dp)
+                                .clip(RoundedCornerShape(6.dp))
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.outline,
+                                    shape = RoundedCornerShape(6.dp)
+                                ),
+                            controller = colorController
+                        )
+                        OutlinedTextField(
+                            value = colorController.selectedColor.value.toHex(),
+                            onValueChange = {},
+                            modifier = Modifier.fillMaxWidth().padding(8.dp).padding(end = 8.dp)
+                        )
+                    }
                 }
             }
         }
     }
+}
+
+fun Color.toHex(): String {
+    val red = (this.red * 255).toInt()
+    val green = (this.green * 255).toInt()
+    val blue = (this.blue * 255).toInt()
+    val alpha = (this.alpha * 255).toInt()
+    return String.format("#%02X%02X%02X%02X", alpha, red, green, blue)
 }

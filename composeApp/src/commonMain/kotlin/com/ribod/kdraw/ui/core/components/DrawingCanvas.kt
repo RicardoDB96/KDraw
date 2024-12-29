@@ -21,6 +21,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
+import com.composables.core.rememberDialogState
 import com.ribod.kdraw.domain.model.GlobalLine
 import com.ribod.kdraw.ui.core.icons.DotsIcon
 import com.ribod.kdraw.ui.core.icons.SelectIcon
@@ -42,17 +43,22 @@ fun DrawingCanvas(
     modifier: Modifier = Modifier,
     globalLines: List<GlobalLine>,
     width: Float,
-    colorHex: Long,
+    onWidthChange: (Float) -> Unit,
+    colorHex: ULong,
+    onColorChange: (ULong) -> Unit,
     onDrawChange: (GlobalLine) -> Unit,
     onLinesMoved: (List<GlobalLine>) -> Unit,
 ) {
     var toolSelected by rememberSaveable { mutableStateOf(Tool.Hand) }
     var canvasMode by rememberSaveable { mutableStateOf(CanvasMode.EMPTY) }
+    var showPenSettings by rememberSaveable { mutableStateOf(false) }
 
     var scale by remember { mutableStateOf(100) }
     var offset by remember { mutableStateOf(Offset.Zero) }
 
     var size by remember { mutableStateOf(Size.Zero) }
+
+    val penSettingsDialogState = rememberDialogState(initiallyVisible = false)
 
     Box(modifier = modifier.fillMaxSize()) {
         DrawCanvas(
@@ -78,7 +84,14 @@ fun DrawingCanvas(
                 .align(Alignment.TopCenter)
                 .padding(16.dp),
             toolSelected = toolSelected,
-            onToolClick = { toolSelected = it },
+            onToolClick = {
+                if (toolSelected == Tool.Pen && it == Tool.Pen) {
+                    showPenSettings = !showPenSettings
+                    penSettingsDialogState.visible = showPenSettings
+                } else {
+                    toolSelected = it
+                }
+            },
             canvasMode = canvasMode,
             onCanvasModeChange = { canvasMode = it }
         )
@@ -92,7 +105,8 @@ fun DrawingCanvas(
                 val newScale = 100
                 if (newScale != scale) {
                     val centerOfCanvas = Offset(size.width / 2f, size.height / 2f)
-                    offset = (offset - centerOfCanvas) * (newScale / scale.toFloat()) + centerOfCanvas
+                    offset =
+                        (offset - centerOfCanvas) * (newScale / scale.toFloat()) + centerOfCanvas
                     scale = newScale
                 }
             },
@@ -100,7 +114,8 @@ fun DrawingCanvas(
                 val newScale = (scale + 10).coerceIn(10, 500)
                 if (newScale != scale) {
                     val centerOfCanvas = Offset(size.width / 2f, size.height / 2f)
-                    offset = (offset - centerOfCanvas) * (newScale / scale.toFloat()) + centerOfCanvas
+                    offset =
+                        (offset - centerOfCanvas) * (newScale / scale.toFloat()) + centerOfCanvas
                     scale = newScale
                 }
             },
@@ -108,10 +123,20 @@ fun DrawingCanvas(
                 val newScale = (scale - 10).coerceIn(10, 500)
                 if (newScale != scale) {
                     val centerOfCanvas = Offset(size.width / 2f, size.height / 2f)
-                    offset = (offset - centerOfCanvas) * (newScale / scale.toFloat()) + centerOfCanvas
+                    offset =
+                        (offset - centerOfCanvas) * (newScale / scale.toFloat()) + centerOfCanvas
                     scale = newScale
                 }
             }
+        )
+
+        PenSettingsDialog(
+            state = penSettingsDialogState,
+            onDismiss = { showPenSettings = false },
+            widthValue = width,
+            onWidthChange = { onWidthChange(it) },
+            colorValue = colorHex,
+            onColorChange = { onColorChange(it) }
         )
     }
 }

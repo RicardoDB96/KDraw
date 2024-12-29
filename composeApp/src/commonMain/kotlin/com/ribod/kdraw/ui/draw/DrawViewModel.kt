@@ -23,4 +23,12 @@ class DrawViewModel : ViewModel() {
             state.copy(globalLines = updatedLines)
         }
     }
+
+    fun onWidthChange(width: Float) {
+        _state.update { it.copy(width = width) }
+    }
+
+    fun onColorChange(color: ULong) {
+        _state.update { it.copy(color = color) }
+    }
 }
