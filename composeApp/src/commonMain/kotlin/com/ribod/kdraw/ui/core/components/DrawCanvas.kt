@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import com.ribod.kdraw.domain.model.GlobalLine
+import com.ribod.kdraw.domain.model.isNearPoint
 import com.ribod.kdraw.ui.core.ex.drawingCanvasModifier
 
 @Composable
@@ -39,6 +40,7 @@ fun DrawCanvas(
     colorHex: ULong,
     onDrawChange: (GlobalLine) -> Unit,
     onLinesMoved: (List<GlobalLine>) -> Unit,
+    onLinesDeleted: (List<GlobalLine>) -> Unit,
     globalLines: List<GlobalLine>,
     canvasMode: CanvasMode,
 ) {
@@ -59,6 +61,7 @@ fun DrawCanvas(
     var isMovingSelection by remember { mutableStateOf(false) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
     var selectedLines by remember { mutableStateOf<List<GlobalLine>>(emptyList()) }
+    var linesToDelete by remember { mutableStateOf<List<GlobalLine>>(emptyList()) }
 
     var selectionStart by remember { mutableStateOf<Offset?>(null) }
     var selectionEnd by remember { mutableStateOf<Offset?>(null) }
@@ -133,6 +136,16 @@ fun DrawCanvas(
                             isPoint = true
                         )
                         onDrawChange(newGlobalLine)
+                    } else if (currentSelectedTool == Tool.Eraser) {
+                        val affectedLines = globalLinesList.filter { line ->
+                            line.isNearPoint(
+                                touchPoint = tapPosition,
+                                offset = currentOffset,
+                                scale = currentScale.toFloat() / 100f,
+                            )
+                        }
+
+                        onLinesDeleted(affectedLines)
                     }
                 }
             }
@@ -157,6 +170,18 @@ fun DrawCanvas(
                                 currentGlobalPath.clear()
                                 currentGlobalPath.add(globalStart)
                                 lastPoint = globalStart
+                            }
+
+                            Tool.Eraser -> {
+                                val affectedLines = globalLinesList.filter { line ->
+                                    line.isNearPoint(
+                                        touchPoint = startPosition,
+                                        offset = currentOffset,
+                                        scale = currentScale.toFloat() / 100f,
+                                    )
+                                }
+
+                                linesToDelete = affectedLines
                             }
 
                             else -> {}
@@ -215,90 +240,112 @@ fun DrawCanvas(
                             Tool.Hand -> {
                                 onOffsetChange(currentOffset + dragAmount)
                             }
+
+                            Tool.Eraser -> {
+                                val affectedLines = globalLinesList.filter { line ->
+                                    line.isNearPoint(
+                                        touchPoint = change.position,
+                                        offset = currentOffset,
+                                        scale = currentScale.toFloat() / 100f,
+                                    )
+                                }
+
+                                linesToDelete = linesToDelete + affectedLines
+                            }
                         }
                     },
                     onDragEnd = {
-                        if (currentSelectedTool == Tool.Pen) {
-                            val newGlobalLine = GlobalLine(
-                                points = currentGlobalPath.toList(),
-                                width = currentWidth,
-                                color = Color(currentColorHex)
-                            )
-                            onDrawChange(newGlobalLine)
+                        when {
+                            currentSelectedTool == Tool.Pen -> {
+                                val newGlobalLine = GlobalLine(
+                                    points = currentGlobalPath.toList(),
+                                    width = currentWidth,
+                                    color = Color(currentColorHex)
+                                )
+                                onDrawChange(newGlobalLine)
 
-                            currentGlobalPath.clear()
-                            lastPoint = null
-                        } else if (isMovingSelection) {
-                            isMovingSelection = false
-                            onLinesMoved(movedLines)
-                        } else {
-                            selectionStart?.let { start ->
-                                selectionEnd?.let { end ->
-                                    val rect = Rect(
-                                        (start.x).coerceAtMost(end.x),
-                                        (start.y).coerceAtMost(end.y),
-                                        (start.x).coerceAtLeast(end.x),
-                                        (start.y).coerceAtLeast(end.y)
-                                    )
+                                currentGlobalPath.clear()
+                                lastPoint = null
+                            }
 
-                                    selectedLines = globalLinesList.filter { line ->
-                                        if (line.isPoint) {
-                                            line.points.first().let { point ->
-                                                val canvasPoint =
-                                                    globalToCanvas(point, currentScale.toFloat() / 100f, currentOffset)
+                            currentSelectedTool == Tool.Eraser -> {
+                                onLinesDeleted(linesToDelete)
+                                linesToDelete = emptyList()
+                            }
 
-                                                val pointRadius = (line.width / 2) * currentScale.toFloat() / 100f
-                                                val pointRect = Rect(
-                                                    canvasPoint.x - pointRadius,
-                                                    canvasPoint.y - pointRadius,
-                                                    canvasPoint.x + pointRadius,
-                                                    canvasPoint.y + pointRadius
-                                                )
-
-                                                rect.overlaps(pointRect)
-                                            }
-                                        } else {
-                                            line.points.all { point ->
-                                                val canvasPoint =
-                                                    globalToCanvas(point, currentScale.toFloat() / 100f, currentOffset)
-                                                rect.contains(canvasPoint)
-                                            }
-                                        }
-                                    }
-
-                                    selectionBoundingBox = if (selectedLines.isNotEmpty()) {
-                                        val allPoints =
-                                            selectedLines.flatMap { line -> line.points }
-                                        val canvasPoints = allPoints.map { point ->
-                                            globalToCanvas(
-                                                point,
-                                                currentScale.toFloat() / 100f,
-                                                currentOffset
-                                            )
-                                        }
-
-                                        val minX = canvasPoints.minOfOrNull { it.x } ?: 0f
-                                        val minY = canvasPoints.minOfOrNull { it.y } ?: 0f
-                                        val maxX = canvasPoints.maxOfOrNull { it.x } ?: 0f
-                                        val maxY = canvasPoints.maxOfOrNull { it.y } ?: 0f
-
-                                        val maxLineWidth =
-                                            selectedLines.maxOfOrNull { it.width } ?: 0f
-                                        val adjustedLineWidth = (maxLineWidth * currentScale.toFloat() / 100f) / 2
-
-                                        Rect(
-                                            minX - adjustedLineWidth,
-                                            minY - adjustedLineWidth,
-                                            maxX + adjustedLineWidth,
-                                            maxY + adjustedLineWidth
+                            isMovingSelection -> {
+                                isMovingSelection = false
+                                onLinesMoved(movedLines)
+                            }
+                            else -> {
+                                selectionStart?.let { start ->
+                                    selectionEnd?.let { end ->
+                                        val rect = Rect(
+                                            (start.x).coerceAtMost(end.x),
+                                            (start.y).coerceAtMost(end.y),
+                                            (start.x).coerceAtLeast(end.x),
+                                            (start.y).coerceAtLeast(end.y)
                                         )
-                                    } else {
-                                        null
+
+                                        selectedLines = globalLinesList.filter { line ->
+                                            if (line.isPoint) {
+                                                line.points.first().let { point ->
+                                                    val canvasPoint =
+                                                        globalToCanvas(point, currentScale.toFloat() / 100f, currentOffset)
+
+                                                    val pointRadius = (line.width / 2) * currentScale.toFloat() / 100f
+                                                    val pointRect = Rect(
+                                                        canvasPoint.x - pointRadius,
+                                                        canvasPoint.y - pointRadius,
+                                                        canvasPoint.x + pointRadius,
+                                                        canvasPoint.y + pointRadius
+                                                    )
+
+                                                    rect.overlaps(pointRect)
+                                                }
+                                            } else {
+                                                line.points.all { point ->
+                                                    val canvasPoint =
+                                                        globalToCanvas(point, currentScale.toFloat() / 100f, currentOffset)
+                                                    rect.contains(canvasPoint)
+                                                }
+                                            }
+                                        }
+
+                                        selectionBoundingBox = if (selectedLines.isNotEmpty()) {
+                                            val allPoints =
+                                                selectedLines.flatMap { line -> line.points }
+                                            val canvasPoints = allPoints.map { point ->
+                                                globalToCanvas(
+                                                    point,
+                                                    currentScale.toFloat() / 100f,
+                                                    currentOffset
+                                                )
+                                            }
+
+                                            val minX = canvasPoints.minOfOrNull { it.x } ?: 0f
+                                            val minY = canvasPoints.minOfOrNull { it.y } ?: 0f
+                                            val maxX = canvasPoints.maxOfOrNull { it.x } ?: 0f
+                                            val maxY = canvasPoints.maxOfOrNull { it.y } ?: 0f
+
+                                            val maxLineWidth =
+                                                selectedLines.maxOfOrNull { it.width } ?: 0f
+                                            val adjustedLineWidth = (maxLineWidth * currentScale.toFloat() / 100f) / 2
+
+                                            Rect(
+                                                minX - adjustedLineWidth,
+                                                minY - adjustedLineWidth,
+                                                maxX + adjustedLineWidth,
+                                                maxY + adjustedLineWidth
+                                            )
+                                        } else {
+                                            null
+                                        }
                                     }
                                 }
+                                selectionStart = null
+                                selectionEnd = null
                             }
-                            selectionStart = null
-                            selectionEnd = null
                         }
                     }
                 )
@@ -319,7 +366,7 @@ fun DrawCanvas(
                 }
             } else {
                 // Dibujar las líneas que no están siendo movidas o no están seleccionadas
-                drawLineOnCanvas(line, currentScale.toFloat() / 100f, currentOffset)
+                drawLineOnCanvas(line, currentScale.toFloat() / 100f, currentOffset, isErasing = linesToDelete.contains(line))
             }
         }
 
@@ -380,12 +427,19 @@ fun DrawCanvas(
 fun DrawScope.drawLineOnCanvas(
     line: GlobalLine,
     scale: Float,
-    offset: Offset
+    offset: Offset,
+    isErasing: Boolean = false
 ) {
+    val color = if (isErasing) {
+        line.color.copy(alpha = line.color.alpha * 0.5f) // Reducir opacidad al borrar
+    } else {
+        line.color
+    }
+
     if (line.isPoint) {
         val point = globalToCanvas(line.points.first(), scale, offset)
         drawCircle(
-            color = line.color,
+            color = color,
             radius = (line.width / 2) * scale,
             center = point
         )
@@ -406,7 +460,7 @@ fun DrawScope.drawLineOnCanvas(
         // Dibujar el path en el lienzo
         drawPath(
             path = path,
-            color = line.color,
+            color = color,
             style = Stroke(
                 width = line.width * scale,
                 cap = StrokeCap.Round,

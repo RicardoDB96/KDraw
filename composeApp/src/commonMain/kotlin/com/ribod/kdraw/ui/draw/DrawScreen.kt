@@ -39,6 +39,7 @@ fun DrawScreen(
                 onColorChange = { color -> vm.onColorChange(color) },
                 onDrawChange = { line -> vm.onDrawChange(line) },
                 onLinesMoved = { lines -> vm.onLinesMoved(lines) },
+                onLinesDeleted = { lines -> vm.onLinesDeleted(lines) }
             )
 
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {

@@ -24,6 +24,15 @@ class DrawViewModel : ViewModel() {
         }
     }
 
+    fun onLinesDeleted(deletedLines: List<GlobalLine>) {
+        _state.update { state ->
+            val updatedLines = state.globalLines.filterNot { line ->
+                deletedLines.any { it.id == line.id }
+            }
+            state.copy(globalLines = updatedLines)
+        }
+    }
+
     fun onWidthChange(width: Float) {
         _state.update { it.copy(width = width) }
     }

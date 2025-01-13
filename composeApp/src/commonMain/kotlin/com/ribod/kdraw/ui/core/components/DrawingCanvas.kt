@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.composables.core.rememberDialogState
 import com.ribod.kdraw.domain.model.GlobalLine
 import com.ribod.kdraw.ui.core.icons.DotsIcon
+import com.ribod.kdraw.ui.core.icons.EraserIcon
 import com.ribod.kdraw.ui.core.icons.SelectIcon
 
 enum class CanvasMode(val icon: ImageVector, val actionText: String) {
@@ -36,6 +37,7 @@ enum class Tool(val icon: ImageVector, val actionText: String) {
     Hand(icon = Icons.Default.BackHand, actionText = "Hand"),
     Select(icon = SelectIcon, actionText = "Select"),
     Pen(icon = Icons.Default.Edit, actionText = "Pen"),
+    Eraser(icon = EraserIcon, actionText = "Eraser"),
 }
 
 @Composable
@@ -48,6 +50,7 @@ fun DrawingCanvas(
     onColorChange: (ULong) -> Unit,
     onDrawChange: (GlobalLine) -> Unit,
     onLinesMoved: (List<GlobalLine>) -> Unit,
+    onLinesDeleted: (List<GlobalLine>) -> Unit,
 ) {
     var toolSelected by rememberSaveable { mutableStateOf(Tool.Hand) }
     var canvasMode by rememberSaveable { mutableStateOf(CanvasMode.EMPTY) }
@@ -75,6 +78,7 @@ fun DrawingCanvas(
             colorHex = colorHex,
             onDrawChange = { onDrawChange(it) },
             onLinesMoved = { onLinesMoved(it) },
+            onLinesDeleted = { onLinesDeleted(it) },
             globalLines = globalLines,
             canvasMode = canvasMode
         )
