@@ -49,7 +49,7 @@ cd KDraw
 
 ### 1. Drawing
 
-- **How to Use**: Open the app, create a new drawing, switch to drawing mode, and use your finger, mouse, or stylus to draw on the canvas. Tap or click to create points, or drag to create continuous lines.
+- **How to Use**: Open the app, create a new drawing, switch to drawing mode, and use your finger, mouse, or stylus to draw on the canvas. Tap or click to create points, or drag to create continuous lines, you can change of color and width by clicking again on drawing mode when is selected.
 
 ### 2. Zoom & Pan
 
