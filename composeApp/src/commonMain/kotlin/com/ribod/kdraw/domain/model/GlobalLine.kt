@@ -2,6 +2,7 @@ package com.ribod.kdraw.domain.model
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import com.ribod.kdraw.data.database.entity.LinesEntity
 import com.ribod.kdraw.ui.core.components.canvasToGlobal
 import java.util.UUID
 
@@ -10,8 +11,18 @@ data class GlobalLine(
     val points: List<Offset>,
     val width: Float,
     val color: Color,
-    val isPoint: Boolean = false
-)
+    val isPoint: Boolean = false,
+    val drawId: Long
+) {
+    fun toEntity(): LinesEntity = LinesEntity(
+        id = id,
+        points = points,
+        width = width,
+        color = color,
+        isPoint = isPoint,
+        drawId = drawId
+    )
+}
 
 fun GlobalLine.isNearPoint(
     touchPoint: Offset,

@@ -1,7 +1,9 @@
 package com.ribod.kdraw.di
 
 import com.ribod.kdraw.data.DrawRepositoryImpl
+import com.ribod.kdraw.data.LinesRepositoryImpl
 import com.ribod.kdraw.domain.DrawRepository
+import com.ribod.kdraw.domain.LinesRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -26,4 +28,5 @@ val dataModule = module {
         }
     }
     factory<DrawRepository> { DrawRepositoryImpl(get()) }
+    factory<LinesRepository> { LinesRepositoryImpl(get()) }
 }

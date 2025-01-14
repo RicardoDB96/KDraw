@@ -25,4 +25,13 @@ interface DrawDao {
 
     @Query("DELETE FROM DrawEntity WHERE id IN (:ids)")
     suspend fun deleteDrawsByIds(ids: Set<Long>)
+
+    @Query("DELETE FROM LinesEntity WHERE drawId IN (:drawId)")
+    suspend fun deleteAllLines(drawId: Set<Long>)
+
+    @Transaction
+    suspend fun deleteDrawsAndRelatedLines(ids: Set<Long>) {
+        deleteAllLines(ids)
+        deleteDrawsByIds(ids)
+    }
 }

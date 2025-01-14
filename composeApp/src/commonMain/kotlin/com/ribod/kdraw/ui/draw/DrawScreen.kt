@@ -23,9 +23,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun DrawScreen(
     modifier: Modifier = Modifier,
-    id: Long,
     onBackPressed: () -> Unit,
-    vm: DrawViewModel = koinViewModel()
+    vm: DrawViewModel
 ) {
     val state by vm.state.collectAsState()
 
@@ -36,6 +35,7 @@ fun DrawScreen(
                 width = state.width,
                 onWidthChange = { width -> vm.onWidthChange(width) },
                 colorHex = state.color,
+                drawId = state.drawId,
                 onColorChange = { color -> vm.onColorChange(color) },
                 onDrawChange = { line -> vm.onDrawChange(line) },
                 onLinesMoved = { lines -> vm.onLinesMoved(lines) },
@@ -56,7 +56,6 @@ fun DrawScreen(
                     )
                 }
             }
-            Text(text = id.toString())
         }
     }
 }

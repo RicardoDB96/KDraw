@@ -38,6 +38,7 @@ fun DrawCanvas(
     onOffsetChange: (Offset) -> Unit,
     width: Float,
     colorHex: ULong,
+    drawId: Long,
     onDrawChange: (GlobalLine) -> Unit,
     onLinesMoved: (List<GlobalLine>) -> Unit,
     onLinesDeleted: (List<GlobalLine>) -> Unit,
@@ -133,7 +134,8 @@ fun DrawCanvas(
                             points = listOf(globalTap),
                             width = currentWidth,
                             color = Color(currentColorHex),
-                            isPoint = true
+                            isPoint = true,
+                            drawId = drawId,
                         )
                         onDrawChange(newGlobalLine)
                     } else if (currentSelectedTool == Tool.Eraser) {
@@ -260,7 +262,8 @@ fun DrawCanvas(
                                 val newGlobalLine = GlobalLine(
                                     points = currentGlobalPath.toList(),
                                     width = currentWidth,
-                                    color = Color(currentColorHex)
+                                    color = Color(currentColorHex),
+                                    drawId = drawId,
                                 )
                                 onDrawChange(newGlobalLine)
 

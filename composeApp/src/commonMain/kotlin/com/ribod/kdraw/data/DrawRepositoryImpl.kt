@@ -19,7 +19,7 @@ class DrawRepositoryImpl(private val kDrawDatabase: KDrawDatabase) : DrawReposit
     }
 
     override suspend fun deleteDrawDB(ids: Set<Long>) {
-        kDrawDatabase.getDrawDao().deleteDrawsByIds(ids = ids)
+        kDrawDatabase.getDrawDao().deleteDrawsAndRelatedLines(ids = ids)
     }
 
     override suspend fun updateDrawDB(drawModel: DrawModel) {
